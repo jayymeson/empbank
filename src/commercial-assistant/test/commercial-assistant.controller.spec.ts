@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CommercialAssistantController } from './commercial-assistant.controller';
-import { CommercialAssistantService } from './commercial-assistant.service';
+import { CommercialAssistantController } from '../commercial-assistant.controller';
+import { CommercialAssistantService } from '../commercial-assistant.service';
 
 describe('CommercialAssistantController', () => {
   let controller: CommercialAssistantController;
