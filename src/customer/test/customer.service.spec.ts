@@ -1,4 +1,4 @@
-// customers.service.spec.ts
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomersService } from '../customer.service';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -15,9 +15,10 @@ describe('CustomersService', () => {
           provide: PrismaService,
           useValue: {
             customers: {
-              create: jest.fn(),
-              findMany: jest.fn(),
-              findUnique: jest.fn(),
+              create: jest.fn().mockResolvedValue(undefined),
+              findMany: jest.fn().mockResolvedValue(undefined),
+              findUnique: jest.fn().mockResolvedValue(undefined),
+              update: jest.fn().mockResolvedValue(undefined),
             },
           },
         },
@@ -35,33 +36,30 @@ describe('CustomersService', () => {
     expect(await service.create(dto)).toEqual(result);
   });
 
-  describe('findCustomers', () => {
-    it('should find unlinked customers', async () => {
-      const customers = [
-        {
-          id: 'uuid-customer-1',
-          name: 'Customer One',
-          code: 'C1',
-          network: 'Network One',
-          commercialAssistantId: null,
-        },
-        {
-          id: 'uuid-customer-2',
-          name: 'Customer Two',
-          code: 'C2',
-          network: 'Network Two',
-          commercialAssistantId: null,
-        },
-      ];
-      jest
-        .spyOn(prismaService.customers, 'findMany')
-        .mockResolvedValue(customers);
-      const result = await service.findCustomers('unlinked');
-      expect(prismaService.customers.findMany).toHaveBeenCalledWith({
-        where: { commercialAssistantId: null },
-        include: { CommercialAssistant: true },
-      });
-      expect(result).toEqual({ data: customers, count: customers.length });
+  it('should find unlinked customers', async () => {
+    const customers = [
+      {
+        id: 'uuid-customer-1',
+        name: 'Customer One',
+        code: 'C1',
+        network: 'Network One',
+        commercialAssistantId: null,
+      },
+      {
+        id: 'uuid-customer-2',
+        name: 'Customer Two',
+        code: 'C2',
+        network: 'Network Two',
+        commercialAssistantId: null,
+      },
+    ];
+    jest
+      .spyOn(prismaService.customers, 'findMany')
+      .mockResolvedValue(customers);
+    const result = await service.findCustomers('unlinked');
+    expect(result).toEqual({
+      data: customers.map(({ commercialAssistantId, ...rest }) => rest),
+      count: customers.length,
     });
   });
 

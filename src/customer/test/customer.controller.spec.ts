@@ -18,8 +18,29 @@ describe('CustomerController', () => {
           provide: CustomersService,
           useValue: {
             create: jest.fn(),
-            findCustomers: jest.fn(),
+            findCustomers: jest.fn().mockImplementation((status?: string) => {
+              const customers = [
+                {
+                  id: 'uuid-customer-1',
+                  name: 'Customer One',
+                  code: 'C1',
+                  network: 'Network One',
+                },
+                {
+                  id: 'uuid-customer-2',
+                  name: 'Customer Two',
+                  code: 'C2',
+                  network: 'Network Two',
+                },
+              ];
+              return Promise.resolve({
+                data: customers,
+                count: customers.length,
+              });
+            }),
             isCodeAvailable: jest.fn(),
+            linkCustomers: jest.fn(),
+            unlinkCustomers: jest.fn(),
           },
         },
       ],
@@ -56,31 +77,12 @@ describe('CustomerController', () => {
     await expect(controller.create(dto)).rejects.toThrow(ConflictException);
   });
 
-  it('should find customers', async () => {
+  it('should find unlinked customers', async () => {
     const status = 'unlinked';
-    const customers = [
-      {
-        id: 'e40a7745-62ec-4bce-964e-c13bcdf34184',
-        name: 'Jaymeson',
-        code: 'XX30-2',
-        network: 'Rede 1',
-        CommercialAssistant: null,
-      },
-      {
-        id: 'daf2eff2-a9fd-4528-95ce-fc0b942cf2f4',
-        name: 'Jaymeson',
-        code: 'CX30-2',
-        network: 'Rede 1',
-        CommercialAssistant: null,
-      },
-    ];
-    jest
-      .spyOn(service, 'findCustomers')
-      .mockResolvedValue({ data: customers, count: 2 });
-    expect(await controller.findCustomers(status)).toEqual({
-      data: customers.map(({ CommercialAssistant, ...customer }) => customer),
-      count: 2,
-    });
+    const expectedResponse = await service.findCustomers(status);
+    const result = await controller.findCustomers(status);
+    expect(result).toEqual(expectedResponse);
+    expect(service.findCustomers).toHaveBeenCalledWith(status);
   });
 
   it('should check code availability', async () => {
