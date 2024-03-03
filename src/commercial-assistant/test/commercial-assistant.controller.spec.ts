@@ -15,6 +15,7 @@ describe('CommercialAssistantController', () => {
           provide: CommercialAssistantService,
           useValue: {
             create: jest.fn(),
+            findAll: jest.fn().mockResolvedValue([]),
           },
         },
       ],
@@ -45,5 +46,25 @@ describe('CommercialAssistantController', () => {
       .mockRejectedValueOnce(new ConflictException());
 
     await expect(controller.create(dto)).rejects.toThrow(ConflictException);
+  });
+
+  it('should find commercial assistants by query', async () => {
+    const caName = 'Vitória';
+    const mockCommercialAssistants = [
+      {
+        id: '1',
+        name: 'Vitória',
+        email: 'vitoria@test.com',
+        phone: '123456789',
+        Customers: [],
+      },
+    ];
+
+    jest.spyOn(service, 'findAll').mockResolvedValue(mockCommercialAssistants);
+
+    await expect(controller.findAll(caName)).resolves.toEqual(
+      mockCommercialAssistants,
+    );
+    expect(service.findAll).toHaveBeenCalledWith(caName);
   });
 });

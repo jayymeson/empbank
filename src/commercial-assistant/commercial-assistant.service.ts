@@ -24,4 +24,28 @@ export class CommercialAssistantService {
     }
     return phone;
   }
+
+  async findAll(query?: string): Promise<CommercialAssistant[]> {
+    let whereCondition = {};
+
+    if (query) {
+      whereCondition = {
+        name: {
+          contains: query,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    const commercialAssistants = await this.prisma.commercialAssistant.findMany(
+      {
+        where: whereCondition,
+        include: {
+          Customers: true,
+        },
+      },
+    );
+
+    return commercialAssistants;
+  }
 }

@@ -1,4 +1,11 @@
-import { Body, ConflictException, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Get,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CommercialAssistantService } from './commercial-assistant.service';
 import { CommercialAssistant } from './models/interface/commercialAssistant.interface';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -34,5 +41,10 @@ export class CommercialAssistantController {
       }
       throw error;
     }
+  }
+
+  @Get()
+  findAll(@Query('ca') ca?: string): Promise<CommercialAssistant[]> {
+    return this.commercialAssistantService.findAll(ca);
   }
 }
