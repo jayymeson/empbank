@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // customer.controller.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomerController } from '../customer.controller';
@@ -63,21 +64,21 @@ describe('CustomerController', () => {
         name: 'Jaymeson',
         code: 'XX30-2',
         network: 'Rede 1',
-        commercialAssistantId: null,
+        CommercialAssistant: null,
       },
       {
         id: 'daf2eff2-a9fd-4528-95ce-fc0b942cf2f4',
         name: 'Jaymeson',
         code: 'CX30-2',
         network: 'Rede 1',
-        commercialAssistantId: null,
+        CommercialAssistant: null,
       },
     ];
     jest
       .spyOn(service, 'findCustomers')
       .mockResolvedValue({ data: customers, count: 2 });
     expect(await controller.findCustomers(status)).toEqual({
-      data: customers,
+      data: customers.map(({ CommercialAssistant, ...customer }) => customer),
       count: 2,
     });
   });
@@ -89,5 +90,32 @@ describe('CustomerController', () => {
       .spyOn(service, 'isCodeAvailable')
       .mockResolvedValue({ available: true });
     expect(await controller.checkCodeAvailability(code)).toEqual(availability);
+  });
+
+  it('should link customers to a commercial assistant', async () => {
+    const linkCustomersDto = {
+      customerIds: ['uuid-customer-1', 'uuid-customer-2'],
+      commercialAssistantId: 'uuid-assistant',
+    };
+    jest
+      .spyOn(service, 'linkCustomers')
+      .mockImplementation(async () => undefined);
+    await expect(
+      controller.linkCustomers(linkCustomersDto),
+    ).resolves.toBeUndefined();
+    expect(service.linkCustomers).toHaveBeenCalledWith(linkCustomersDto);
+  });
+
+  it('should unlink customers from any commercial assistant', async () => {
+    const unlinkCustomersDto = {
+      customerIds: ['uuid-customer-1', 'uuid-customer-2'],
+    };
+    jest
+      .spyOn(service, 'unlinkCustomers')
+      .mockImplementation(async () => undefined);
+    await expect(
+      controller.unlinkCustomers(unlinkCustomersDto),
+    ).resolves.toBeUndefined();
+    expect(service.unlinkCustomers).toHaveBeenCalledWith(unlinkCustomersDto);
   });
 });

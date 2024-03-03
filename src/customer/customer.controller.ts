@@ -11,6 +11,8 @@ import { CreateCustomerDto } from './models/dto/create-customers.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Customers } from './models/entities/customers.interface';
 import { ApiTags } from '@nestjs/swagger';
+import { LinkCustomersDto } from './models/dto/create-linkComercialAssistant.dto';
+import { UnlinkCustomersDto } from './models/dto/create-unlinkCommercialAssistant.dto';
 
 @ApiTags('Customers')
 @Controller('customer')
@@ -48,5 +50,15 @@ export class CustomerController {
     } else {
       return { message: 'Code unavailable' };
     }
+  }
+
+  @Post('link-customers')
+  async linkCustomers(@Body() linkCustomersDto: LinkCustomersDto) {
+    await this.customersService.linkCustomers(linkCustomersDto);
+  }
+
+  @Post('unlink-customers')
+  async unlinkCustomers(@Body() unlinkCustomersDto: UnlinkCustomersDto) {
+    await this.customersService.unlinkCustomers(unlinkCustomersDto);
   }
 }
