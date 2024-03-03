@@ -3,5 +3,5 @@ export interface Customers {
   code: string;
   name: string;
   network: string;
-  commercialAssistantId?: number | null;
+  commercialAssistantId?: string | null;
 }

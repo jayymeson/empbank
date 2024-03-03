@@ -13,14 +13,14 @@ model Customers {
   code                  String               @unique
   name                  String
   network               String
-  commercialAssistantId Int?              
+  commercialAssistantId String?              
   CommercialAssistant   CommercialAssistant? @relation(fields: [commercialAssistantId], references: [id])
 
   @@map("customers")
 }
 
 model CommercialAssistant {
-  id            Int                  @id @default(autoincrement())
+  id            String               @id @default(uuid())
   name          String
   email         String               @unique
   phone         String               @unique
