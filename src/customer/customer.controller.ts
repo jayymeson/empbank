@@ -38,8 +38,8 @@ export class CustomerController {
   }
 
   @Get('find')
-  findCustomers(@Query('status') status?: string) {
-    return this.customersService.findCustomers(status);
+  findCustomers() {
+    return this.customersService.findCustomers();
   }
 
   @Get('check-code')

@@ -16,28 +16,16 @@ export class CustomersService {
     });
   }
 
-  async findCustomers(status?: string) {
-    let whereCondition = {};
-
-    if (status === 'unlinked') {
-      whereCondition = { commercialAssistantId: null };
-    } else if (status === 'linked') {
-      whereCondition = { NOT: { commercialAssistantId: null } };
-    }
+  async findCustomers() {
+    const whereCondition = { commercialAssistantId: null };
 
     const customers = await this.prisma.customers.findMany({
       where: whereCondition,
-      include: { CommercialAssistant: true },
-    });
-
-    const processedCustomers = customers.map((customer) => {
-      const { commercialAssistantId, ...customerData } = customer;
-      return customerData;
     });
 
     return {
-      data: processedCustomers,
-      count: processedCustomers.length,
+      data: customers,
+      count: customers.length,
     };
   }
 
