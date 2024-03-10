@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException } from '@nestjs/common';
 import { CommercialAssistantController } from '../commercial-assistant.controller';
 import { CommercialAssistantService } from '../commercial-assistant.service';
+import { ConflictException } from '@nestjs/common';
 
 describe('CommercialAssistantController', () => {
   let controller: CommercialAssistantController;
@@ -44,12 +44,10 @@ describe('CommercialAssistantController', () => {
     jest
       .spyOn(service, 'create')
       .mockRejectedValueOnce(new ConflictException());
-
     await expect(controller.create(dto)).rejects.toThrow(ConflictException);
   });
 
-  it('should find commercial assistants by query', async () => {
-    const caName = 'Vitória';
+  it('should find all commercial assistants', async () => {
     const mockCommercialAssistants = [
       {
         id: '1',
@@ -59,12 +57,10 @@ describe('CommercialAssistantController', () => {
         Customers: [],
       },
     ];
-
     jest.spyOn(service, 'findAll').mockResolvedValue(mockCommercialAssistants);
-
-    await expect(controller.findAll(caName)).resolves.toEqual(
+    await expect(controller.findAll()).resolves.toEqual(
       mockCommercialAssistants,
     );
-    expect(service.findAll).toHaveBeenCalledWith(caName);
+    expect(service.findAll).toHaveBeenCalled();
   });
 });

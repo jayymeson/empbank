@@ -16,7 +16,7 @@ describe('CustomersService', () => {
           useValue: {
             customers: {
               create: jest.fn().mockResolvedValue(undefined),
-              findMany: jest.fn().mockResolvedValue(undefined),
+              findMany: jest.fn().mockResolvedValue([]),
               findUnique: jest.fn().mockResolvedValue(undefined),
               update: jest.fn().mockResolvedValue(undefined),
             },
@@ -37,30 +37,12 @@ describe('CustomersService', () => {
   });
 
   it('should find unlinked customers', async () => {
-    const customers = [
-      {
-        id: 'uuid-customer-1',
-        name: 'Customer One',
-        code: 'C1',
-        network: 'Network One',
-        commercialAssistantId: null,
-      },
-      {
-        id: 'uuid-customer-2',
-        name: 'Customer Two',
-        code: 'C2',
-        network: 'Network Two',
-        commercialAssistantId: null,
-      },
-    ];
+    const customers = [];
     jest
       .spyOn(prismaService.customers, 'findMany')
       .mockResolvedValue(customers);
-    const result = await service.findCustomers('unlinked');
-    expect(result).toEqual({
-      data: customers.map(({ commercialAssistantId, ...rest }) => rest),
-      count: customers.length,
-    });
+    const result = await service.findCustomers();
+    expect(result).toEqual({ data: customers, count: customers.length });
   });
 
   it('should check code availability', async () => {

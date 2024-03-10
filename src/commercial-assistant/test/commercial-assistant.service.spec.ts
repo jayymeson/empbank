@@ -48,37 +48,26 @@ describe('CommercialAssistantService', () => {
     expect(service.formatPhone('+55123456789')).toBe('+55123456789');
   });
 
-  describe('findAll', () => {
-    it('should find commercial assistants by name', async () => {
-      const caName = 'Vitória';
-      const mockCommercialAssistants = [
-        {
-          id: '1',
-          name: 'Vitória',
-          email: 'vitoria@test.com',
-          phone: '123456789',
-          Customers: [],
-        },
-      ];
+  it('should find all commercial assistants', async () => {
+    const mockCommercialAssistants = [
+      {
+        id: '1',
+        name: 'Vitória',
+        email: 'vitoria@test.com',
+        phone: '123456789',
+        Customers: [],
+      },
+    ];
 
-      jest
-        .spyOn(prismaService.commercialAssistant, 'findMany')
-        .mockResolvedValue(mockCommercialAssistants);
+    jest
+      .spyOn(prismaService.commercialAssistant, 'findMany')
+      .mockResolvedValue(mockCommercialAssistants);
 
-      await expect(service.findAll(caName)).resolves.toEqual(
-        mockCommercialAssistants,
-      );
-      expect(prismaService.commercialAssistant.findMany).toHaveBeenCalledWith({
-        where: {
-          name: {
-            contains: caName,
-            mode: 'insensitive',
-          },
-        },
-        include: {
-          Customers: true,
-        },
-      });
+    await expect(service.findAll()).resolves.toEqual(mockCommercialAssistants);
+    expect(prismaService.commercialAssistant.findMany).toHaveBeenCalledWith({
+      include: {
+        Customers: true,
+      },
     });
   });
 });

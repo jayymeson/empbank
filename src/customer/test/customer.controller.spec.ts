@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// customer.controller.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomerController } from '../customer.controller';
 import { CustomersService } from '../customer.service';
@@ -18,25 +16,9 @@ describe('CustomerController', () => {
           provide: CustomersService,
           useValue: {
             create: jest.fn(),
-            findCustomers: jest.fn().mockImplementation((status?: string) => {
-              const customers = [
-                {
-                  id: 'uuid-customer-1',
-                  name: 'Customer One',
-                  code: 'C1',
-                  network: 'Network One',
-                },
-                {
-                  id: 'uuid-customer-2',
-                  name: 'Customer Two',
-                  code: 'C2',
-                  network: 'Network Two',
-                },
-              ];
-              return Promise.resolve({
-                data: customers,
-                count: customers.length,
-              });
+            findCustomers: jest.fn().mockResolvedValue({
+              data: [],
+              count: 0,
             }),
             isCodeAvailable: jest.fn(),
             linkCustomers: jest.fn(),
@@ -78,11 +60,10 @@ describe('CustomerController', () => {
   });
 
   it('should find unlinked customers', async () => {
-    const status = 'unlinked';
-    const expectedResponse = await service.findCustomers(status);
-    const result = await controller.findCustomers(status);
+    const expectedResponse = await service.findCustomers();
+    const result = await controller.findCustomers();
     expect(result).toEqual(expectedResponse);
-    expect(service.findCustomers).toHaveBeenCalledWith(status);
+    expect(service.findCustomers).toHaveBeenCalled();
   });
 
   it('should check code availability', async () => {

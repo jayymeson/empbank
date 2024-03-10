@@ -110,7 +110,7 @@ export class CustomersService {
           {
             code: {
               equals: searchTerm,
-              mode: 'insensitive', // Para busca case-insensitive
+              mode: 'insensitive',
             },
           },
         ],
