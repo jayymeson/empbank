@@ -10,12 +10,23 @@ import { UnlinkCustomersDto } from './models/dto/create-unlinkCommercialAssistan
 export class CustomersService {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Creates a new customer.
+   * @param {CreateCustomerDto} createCustomerDto - Data Transfer Object for creating a customer.
+   * @returns {Promise<Customers>} The created customer object.
+   * @author Jaymeson
+   */
   async create(createCustomerDto: CreateCustomerDto): Promise<Customers> {
     return this.prisma.customers.create({
       data: createCustomerDto,
     });
   }
 
+  /**
+   * Finds all customers without a linked commercial assistant.
+   * @returns {Promise<{data: Customers[]; count: number}>} An object containing an array of customers and the count.
+   * @author Jaymeson
+   */
   async findCustomers() {
     const whereCondition = { commercialAssistantId: null };
 
@@ -29,6 +40,12 @@ export class CustomersService {
     };
   }
 
+  /**
+   * Checks if a customer code is available.
+   * @param {string} code - The customer code to check.
+   * @returns {Promise<{available: boolean}>} An object indicating if the code is available.
+   * @author Jaymeson
+   */
   async isCodeAvailable(code: string): Promise<{ available: boolean }> {
     const customer = await this.prisma.customers.findUnique({
       where: {
@@ -38,6 +55,12 @@ export class CustomersService {
     return { available: !customer };
   }
 
+  /**
+   * Links customers to a commercial assistant.
+   * @param {LinkCustomersDto} linkCustomersDto - DTO for linking customers.
+   * @returns {Promise<void>} Void.
+   * @author Jaymeson
+   */
   async linkCustomers(linkCustomersDto: LinkCustomersDto): Promise<void> {
     await Promise.all(
       linkCustomersDto.customerIds.map((customerId) =>
@@ -51,6 +74,12 @@ export class CustomersService {
     );
   }
 
+  /**
+   * Unlinks customers from any commercial assistant.
+   * @param {UnlinkCustomersDto} unlinkCustomersDto - DTO for unlinking customers.
+   * @returns {Promise<void>} Void.
+   * @author Jaymeson
+   */
   async unlinkCustomers(unlinkCustomersDto: UnlinkCustomersDto): Promise<void> {
     await Promise.all(
       unlinkCustomersDto.customerIds.map((customerId) =>
@@ -60,5 +89,32 @@ export class CustomersService {
         }),
       ),
     );
+  }
+
+  /**
+   * Finds customers by name or code.
+   * @param {string} searchTerm - The search term (name or code).
+   * @returns {Promise<Customers[]>} An array of customers that match the search term.
+   * @author Jaymeson
+   */
+  async findCustomersByNameOrCode(searchTerm: string) {
+    return this.prisma.customers.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: searchTerm,
+              mode: 'insensitive', // Para busca case-insensitive
+            },
+          },
+          {
+            code: {
+              equals: searchTerm,
+              mode: 'insensitive', // Para busca case-insensitive
+            },
+          },
+        ],
+      },
+    });
   }
 }

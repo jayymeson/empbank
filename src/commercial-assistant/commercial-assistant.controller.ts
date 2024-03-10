@@ -3,13 +3,14 @@ import {
   ConflictException,
   Controller,
   Get,
+  Param,
   Post,
-  Query,
 } from '@nestjs/common';
 import { CommercialAssistantService } from './commercial-assistant.service';
 import { CommercialAssistant } from './models/interface/commercialAssistant.interface';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CommercialAssistantDto } from './models/dto/create-commercialAssistant.dto';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('commercial-assistant')
 export class CommercialAssistantController {
@@ -18,6 +19,15 @@ export class CommercialAssistantController {
   ) {}
 
   @Post()
+  @ApiResponse({
+    status: 201,
+    description: 'Commercial assistant created successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict: Email or phone already exists',
+  })
   async create(
     @Body() commercialAssistantDto: CommercialAssistantDto,
   ): Promise<CommercialAssistant> {
@@ -44,7 +54,22 @@ export class CommercialAssistantController {
   }
 
   @Get()
-  findAll(@Query('ca') ca?: string): Promise<CommercialAssistant[]> {
-    return this.commercialAssistantService.findAll(ca);
+  @ApiResponse({
+    status: 200,
+    description: 'Commercial assistants found successfully',
+  })
+  @ApiResponse({ status: 404, description: 'No commercial assistants found' })
+  findAll(): Promise<CommercialAssistant[]> {
+    return this.commercialAssistantService.findAll();
+  }
+
+  @Get(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Commercial assistant found successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Commercial assistant not found' })
+  findById(@Param('id') id: string): Promise<CommercialAssistant | null> {
+    return this.commercialAssistantService.findById(id);
   }
 }

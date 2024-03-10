@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ConflictException,
   Controller,
@@ -10,7 +11,7 @@ import { CustomersService } from './customer.service';
 import { CreateCustomerDto } from './models/dto/create-customers.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Customers } from './models/entities/customers.interface';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LinkCustomersDto } from './models/dto/create-linkComercialAssistant.dto';
 import { UnlinkCustomersDto } from './models/dto/create-unlinkCommercialAssistant.dto';
 
@@ -20,6 +21,15 @@ export class CustomerController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Post()
+  @ApiResponse({
+    status: 201,
+    description: 'Customer created successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict: Customer with code already exists',
+  })
   async create(
     @Body() createCustomerDto: CreateCustomerDto,
   ): Promise<Customers> {
@@ -38,11 +48,21 @@ export class CustomerController {
   }
 
   @Get('find')
+  @ApiResponse({
+    status: 200,
+    description: 'Customers found successfully',
+  })
+  @ApiResponse({ status: 404, description: 'No customers found' })
   findCustomers() {
     return this.customersService.findCustomers();
   }
 
   @Get('check-code')
+  @ApiResponse({
+    status: 200,
+    description: 'Code availability checked successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   async checkCodeAvailability(@Query('code') code: string) {
     const availability = await this.customersService.isCodeAvailable(code);
     if (availability.available) {
@@ -53,12 +73,37 @@ export class CustomerController {
   }
 
   @Post('link-customers')
+  @ApiResponse({
+    status: 200,
+    description: 'Customers linked to commercial assistant successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   async linkCustomers(@Body() linkCustomersDto: LinkCustomersDto) {
     await this.customersService.linkCustomers(linkCustomersDto);
   }
 
   @Post('unlink-customers')
+  @ApiResponse({
+    status: 200,
+    description: 'Customers unlinked from commercial assistant successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   async unlinkCustomers(@Body() unlinkCustomersDto: UnlinkCustomersDto) {
     await this.customersService.unlinkCustomers(unlinkCustomersDto);
+  }
+
+  @Get('search')
+  @ApiResponse({
+    status: 200,
+    description: 'Customers found by name or code successfully',
+  })
+  @ApiResponse({ status: 404, description: 'No customers found' })
+  async searchCustomers(@Query('searchTerm') searchTerm: string) {
+    if (!searchTerm) {
+      throw new BadRequestException('Search term is required');
+    }
+    const customers =
+      await this.customersService.findCustomersByNameOrCode(searchTerm);
+    return customers;
   }
 }
