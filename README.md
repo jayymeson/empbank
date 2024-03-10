@@ -68,7 +68,7 @@ Link para baixar: https://insomnia.rest/download
 
 1. Após fazer a instalação, colar o link do navegador no local mostrado:
 
-![alt text](image.png) 
+![alt text](image.png)
 
 2. Aperte em "send" e logo vai ser retornado o conteúdo:
 
@@ -85,7 +85,8 @@ Link para baixar: https://insomnia.rest/download
 **Ferramentas:**
 <img align="center" src="https://insomnia.rest/images/run.svg" alt="Run in Insomnia">
 <img align="center" src="https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white" alt="Visual Studio">
-<img align="center" alt="Sqlite" src="https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white">
+<img align="center" alt="Sqlite" src="https://img.shields.io/badge/PostgreSQL-2496ED?style=for-the-badge&logo=postgresql&logoColor=white">
+<img align="center" alt="Sqlite" src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
 
 ## Autor(es) 👨🏼‍💻👨🏼‍💻👨🏼‍💻👨🏼‍💻
 
